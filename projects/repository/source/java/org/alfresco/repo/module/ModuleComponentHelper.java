@@ -644,7 +644,7 @@ public class ModuleComponentHelper
         Map<String, ModuleComponent> componentsByName = getComponents(moduleId);
         for (ModuleComponent component : componentsByName.values())
         {
-            executeComponent(moduleId, moduleNewVersion, component, executedComponents);
+            executeComponent(moduleNewVersion, component, executedComponents);
         }
         
         // Keep track of the ID as it started successfully
@@ -669,7 +669,6 @@ public class ModuleComponentHelper
      * Execute the component, respecting dependencies.
      */
     private void executeComponent(
-            String moduleId,
             ModuleVersionNumber currentVersion,
             ModuleComponent component,
             Set<ModuleComponent> executedComponents)
@@ -698,7 +697,6 @@ public class ModuleComponentHelper
             {
                 logger.debug("Skipping component that doesn't apply to the module installation version: \n" +
                         "   Component:       " + component + "\n" +
-                        "   Module:          " + moduleId + "\n" +
                         "   Current Version: " + currentVersion + "\n" +
                         "   Applies From :   " + minVersion + "\n" +
                         "   Applies To   :   " + maxVersion);
@@ -710,7 +708,7 @@ public class ModuleComponentHelper
         String name = component.getName();
         RegistryKey executionDateKey = new RegistryKey(
                 ModuleComponentHelper.URI_MODULES_1_0,
-                REGISTRY_PATH_MODULES, moduleId, REGISTRY_PATH_COMPONENTS, name, REGISTRY_PROPERTY_EXECUTION_DATE);
+                REGISTRY_PATH_MODULES, component.getModuleId(), REGISTRY_PATH_COMPONENTS, name, REGISTRY_PROPERTY_EXECUTION_DATE);
         
         // Check if the component has been executed
         Date executionDate = (Date) registryService.getProperty(executionDateKey);
@@ -730,7 +728,7 @@ public class ModuleComponentHelper
         List<ModuleComponent> dependencies = component.getDependsOn();
         for (ModuleComponent dependency : dependencies)
         {
-            executeComponent(moduleId, currentVersion, dependency, executedComponents);
+            executeComponent(currentVersion, dependency, executedComponents);
         }
         // Execute the component itself
         component.execute();
